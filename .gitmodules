@@ -1,0 +1,3 @@
+[submodule "TUM RCI"]
+	path = TUM RCI
+	url = https://github.com/philippwulff/TUM_RCI.git
