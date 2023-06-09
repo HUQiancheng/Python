@@ -92,10 +92,15 @@ class GUIFigure:
 
         # Generate answer options
         correct_option = self.image_name
-        image_name_options = list(set([os.path.basename(row[0]) for row in self.image_data if os.path.basename(row[0]) != self.image_name]))
+        category_images = [row[0] for row in self.image_data if row[1] == category]
+        image_name_options = list(set([os.path.basename(row) for row in category_images if os.path.basename(row) != self.image_name]))
+        if len(image_name_options) == 0:
+            image_name_options = [os.path.basename(row[0]) for row in self.image_data if row[1] != category and os.path.basename(row[0]) != self.image_name]
         random.shuffle(image_name_options)
+
+        # One of them is from the same category as the image, the other is from a different category
         incorrect_option_1 = image_name_options[0]
-        incorrect_option_2 = random.choice([os.path.basename(row[0]) for row in self.image_data if os.path.basename(row[0]) != self.image_name and os.path.basename(row[0]) != incorrect_option_1])
+        incorrect_option_2 = os.path.basename(random.choice([row[0] for row in self.image_data if row[1] != category and os.path.basename(row[0]) != self.image_name]))
 
         # Display answer options on buttons
         options = [correct_option, incorrect_option_1, incorrect_option_2]
