@@ -103,11 +103,22 @@ class GUIFigure:
         if len(image_name_options) == 0:
             image_name_options = [os.path.basename(row[0]) for row in self.image_data if row[1] != category and os.path.basename(row[0]) != self.image_name]
         random.shuffle(image_name_options)
+
+        # difficulty Level choice implementation according to the category
+        if self.difficulty == "easy":
         # easy: three options are from the different categories
+            incorrect_option_1 = os.path.basename(random.choice([row[0] for row in self.image_data if row[1] != category and os.path.basename(row[0]) != self.image_name]))
+            incorrect_option_2 = os.path.basename(random.choice([row[0] for row in self.image_data if row[1] != category and os.path.basename(row[0]) != self.image_name]))
         # medium: One of them is from the same category as the image, the other is from a different category
-        incorrect_option_1 = image_name_options[0]
-        incorrect_option_2 = os.path.basename(random.choice([row[0] for row in self.image_data if row[1] != category and os.path.basename(row[0]) != self.image_name]))
+        elif self.difficulty == "medium":
+            incorrect_option_1 = image_name_options[0]
+            incorrect_option_2 = os.path.basename(random.choice([row[0] for row in self.image_data if row[1] != category and os.path.basename(row[0]) != self.image_name]))
+        
         # hard: three options are from the same category
+        elif self.difficulty == "hard":
+            incorrect_option_1 = image_name_options[0]
+            incorrect_option_2 = image_name_options[1]
+            
         # Display answer options on buttons
         options = [correct_option, incorrect_option_1, incorrect_option_2]
         random.shuffle(options)
