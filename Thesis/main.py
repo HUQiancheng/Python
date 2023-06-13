@@ -50,7 +50,7 @@ class GUIFigure:
         if not os.path.exists(csv_file_path):
             with open(csv_file_path, 'w') as f:
                 f.write('Header1,Header2,Header3\n')
-            save_image_info_to_csv(csv_file_path)
+        save_image_info_to_csv(csv_file_path)
 
         # Load image data from CSV file
         self.image_data = []
@@ -148,7 +148,7 @@ class GUIFigure:
 
 def save_image_info_to_csv(csv_file_path):
     # Get the path to the Images folder
-    images_folder_path = os.path.join(os.path.dirname(csv_file_path), 'Animals')
+    images_folder_path = os.path.dirname(csv_file_path)
 
     # Get a list of all image files in the Images folder
     image_files = [os.path.join(images_folder_path, f) for f in os.listdir(images_folder_path) if f.endswith('.jpg')]
