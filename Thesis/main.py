@@ -151,13 +151,17 @@ def save_image_info_to_csv(csv_file_path):
     images_folder_path = os.path.dirname(csv_file_path)
 
     # Get a list of all image files in the Images folder
-    image_files = [os.path.join(images_folder_path, f) for f in os.listdir(images_folder_path) if f.endswith('.jpg')]
+    image_files = []
+    for dirpath, dirnames, filenames in os.walk(images_folder_path):
+        for filename in filenames:
+            if filename.endswith('.jpg'):
+                image_files.append(os.path.join(dirpath, filename))
 
     # Shuffle the image files
     random.shuffle(image_files)
 
     # Save image information to CSV file
-    with open(csv_file_path, 'a', newline='') as f:
+    with open(csv_file_path, 'w', newline='') as f:
         writer = csv.writer(f)
         for image_file in image_files:
             category = os.path.basename(os.path.dirname(image_file))
