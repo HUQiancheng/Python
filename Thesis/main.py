@@ -2,6 +2,7 @@ import os
 import tkinter as tk
 import random
 import csv
+import datetime
 from PIL import Image, ImageTk
 
 class DifficultySelection:
@@ -37,6 +38,22 @@ class GUIFigure:
         self.master.title("Image Quiz")
         self.master.geometry("500x500")
         self.difficulty = difficulty
+
+        # Create the log directory if it doesn't exist
+        if not os.path.exists('log'):
+            os.makedirs('log')
+
+        # Open the log file in append mode
+        self.log_file = open('log/logfile.csv', 'a', newline='')
+
+        # Create a CSV writer object
+        self.csv_writer = csv.writer(self.log_file)
+
+        # Write the header row if the file is empty
+        if os.stat('log/logfile.csv').st_size == 0:
+            self.csv_writer.writerow(['Date', 'Time', 'Image', 'Answer', 'Result'])
+
+  
 
         # Get the file path of the current script and the root folder path
         current_file_path = os.path.abspath(__file__)
@@ -142,7 +159,15 @@ class GUIFigure:
             for button in self.answer_buttons:
                 button.configure(state="disabled")
             return
-
+        # Write the data to the log file
+        now = datetime.datetime.now()
+        date = now.strftime('%Y-%m-%d')
+        time = now.strftime('%H:%M:%S')
+        image = os.path.basename(self.image_path)
+        answer = self.answer_buttons[index].cget('text')
+        result = 'Correct' if answer == self.image_name else 'Incorrect'
+        self.csv_writer.writerow([date, time, image, answer, result])
+        self.log_file.flush()
         # Move on to next question
         self.next_question()
 

@@ -1,0 +1,10 @@
+Date,Time,Image,Answer,Result
+2023-06-15,15:54:11,hair.jpg,hair.jpg,Correct
+2023-06-15,15:54:12,Table.jpg,Table.jpg,Correct
+2023-06-15,15:54:13,Hand.jpg,Hand.jpg,Correct
+2023-06-15,15:54:14,mouth.jpg,Handrag.jpg,Incorrect
+2023-06-15,15:54:15,Hamburger.jpg,Ticket.jpg,Incorrect
+2023-06-15,15:54:15,Summer.jpg,Puppy.jpg,Incorrect
+2023-06-15,15:54:15,Hamburger.jpg,Fireplace.jpg,Incorrect
+2023-06-15,15:54:15,Hand.jpg,Scarf.jpg,Incorrect
+2023-06-15,15:54:16,Cloudy.jpg,Toy Robots.jpg,Incorrect
