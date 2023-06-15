@@ -3,28 +3,29 @@ import tkinter as tk
 import random
 import csv
 import datetime
+from tkvideo import tkvideo
 from PIL import Image, ImageTk
 
 class DifficultySelection:
     def __init__(self, master):
         self.master = master
         self.master.title("Select Difficulty")
-        self.master.geometry("300x150")
+        self.master.geometry("500x200")
 
         self.difficulty = tk.StringVar()
         self.difficulty.set("easy")
 
         easy_button = tk.Radiobutton(self.master, text="Easy", variable=self.difficulty, value="easy")
-        easy_button.pack(pady=5)
+        easy_button.pack(pady=10)
 
         medium_button = tk.Radiobutton(self.master, text="Medium", variable=self.difficulty, value="medium")
-        medium_button.pack(pady=5)
+        medium_button.pack(pady=10)
 
         hard_button = tk.Radiobutton(self.master, text="Hard", variable=self.difficulty, value="hard")
-        hard_button.pack(pady=5)
+        hard_button.pack(pady=10)
 
         start_button = tk.Button(self.master, text="Start", command=self.start_quiz)
-        start_button.pack(pady=10)
+        start_button.pack(pady=20)
 
     def start_quiz(self):
         self.master.destroy()
@@ -36,8 +37,12 @@ class GUIFigure:
     def __init__(self, master, difficulty):
         self.master = master
         self.master.title("Image Quiz")
-        self.master.geometry("500x500")
+        self.master.geometry("800x500")
         self.difficulty = difficulty
+        self.image_path = ""
+        self.image_name = ""
+        self.num_questions = 0
+        self.score = [0, 0]
 
         # Create the log directory if it doesn't exist
         if not os.path.exists('log'):
@@ -79,19 +84,22 @@ class GUIFigure:
 
         # Create UI components
         self.question_label = tk.Label(self.master, text="Question", font=("Arial", 20))
-        self.question_label.pack(pady=20)
+        self.question_label.pack(pady=20, padx=(0, 20), anchor="e")
 
         self.answer_frame = tk.Frame(self.master)
-        self.answer_frame.pack(pady=20)
+        self.answer_frame.pack(pady=20, padx=(0, 20), anchor="e")
 
         self.answer_buttons = []
         for i in range(3):
             button = tk.Button(self.answer_frame, text="", font=("Arial", 16), command=lambda i=i: self.check_answer(i))
-            button.pack(side="left", padx=10)
+            button.pack(side="right", padx=10)
             self.answer_buttons.append(button)
 
         self.score_label = tk.Label(self.master, text="Score: 0/0", font=("Arial", 16))
-        self.score_label.pack(pady=20)
+        self.score_label.pack(pady=20, padx=(0, 20), anchor="e")
+
+        self.axis_frame = tk.Frame(self.master)
+        self.axis_frame.pack(side="left", padx=20, pady=20)
 
         # Start quiz
         self.score = [0, 0] # [num_correct, num_total]
@@ -149,6 +157,9 @@ class GUIFigure:
         # Update score
         if self.answer_buttons[index].cget("text") == self.image_name:
             self.score[0] += 1
+            video_path = os.path.join("C:/Users/24707/InsidersProjects/Python/Thesis/Videos", "Right.mp4")
+        else:
+            video_path = os.path.join("C:/Users/24707/InsidersProjects/Python/Thesis/Videos", "Wrong.mp4")
         self.score[1] += 1
 
         # Update score label
@@ -159,6 +170,7 @@ class GUIFigure:
             for button in self.answer_buttons:
                 button.configure(state="disabled")
             return
+
         # Write the data to the log file
         now = datetime.datetime.now()
         date = now.strftime('%Y-%m-%d')
@@ -168,8 +180,13 @@ class GUIFigure:
         result = 'Correct' if answer == self.image_name else 'Incorrect'
         self.csv_writer.writerow([date, time, image, answer, result])
         self.log_file.flush()
+
         # Move on to next question
         self.next_question()
+
+        # Play video
+        player = tkvideo(video_path, self.axis_frame, loop=1, size=(320, 240))
+        player.play()
 
 def save_image_info_to_csv(csv_file_path):
     # Get the path to the Images folder

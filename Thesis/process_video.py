@@ -1,39 +1,35 @@
 import os
-from moviepy.editor import VideoFileClip, ImageClip, CompositeVideoClip
+import sys
+import tkinter as tk
 
-def process_videos(green_range, bg_image_path, video_paths):
-    # Load the background image
-    bg_image = ImageClip(bg_image_path)
+import gobject
+import gst
 
-    # Define the processed video file paths
-    processed_video_paths = {}
+def on_sync_message(bus, message, window_id):
+    if not message.structure is None:
+        if message.structure.get_name() == 'prepare-xwindow-id':
+            image_sink = message.src
+            image_sink.set_property('force-aspect-ratio', True)
+            image_sink.set_xwindow_id(window_id)
 
-    # Get the path to the Videos folder
-    videos_folder_path = os.path.join(os.path.dirname(os.getcwd()), "Videos")
+gobject.threads_init()
 
-    # Process each video file
-    for name, path in video_paths.items():
-        # Load the video clip
-        video_clip = VideoFileClip(os.path.join(videos_folder_path, path))
+window = tk.Tk()
+window.geometry('500x400')
 
-        # Apply the green screen effect to the video clip
-        green_screen_clip = video_clip.fx(vfx.colorkey, color=green_range)
+video = tk.Frame(window, bg='#000000')
+video.pack(side=tk.BOTTOM, anchor=tk.S, expand=tk.YES, fill=tk.BOTH)
 
-        # Resize the green screen clip to fit the background image
-        green_screen_clip = green_screen_clip.resize(bg_image.size)
+window_id = video.winfo_id()
 
-        # Create a composite video clip with the green screen clip and the background image
-        composite_clip = CompositeVideoClip([green_screen_clip, bg_image.set_duration(green_screen_clip.duration)])
+player = gst.element_factory_make('playbin2', 'player')
+player.set_property('video-sink', None)
+player.set_property('uri', 'file://%s' % (os.path.abspath("C:/Users/24707/InsidersProjects/Python/Thesis/Videos/Right.mp4")))
+player.set_state(gst.STATE_PLAYING)
 
-        # Set the background color of the composite clip as the mask color
-        mask_color = tuple(int(bg_image.get_frame(0)[i]) for i in range(3))
-        composite_clip = composite_clip.set_mask(ImageClip(bg_image.size, color=mask_color))
+bus = player.get_bus()
+bus.add_signal_watch()
+bus.enable_sync_message_emission()
+bus.connect('sync-message::element', on_sync_message, window_id)
 
-        # Write the processed video clip to a file
-        processed_path = f"{name}_processed.mp4"
-        composite_clip.write_videofile(processed_path, fps=25, codec='libx264')
-
-        # Add the processed video file path to the dictionary
-        processed_video_paths[name] = processed_path
-
-    return processed_video_paths
+window.mainloop()
